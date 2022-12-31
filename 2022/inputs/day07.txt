@@ -1,0 +1,9 @@
+$ cd /
+$ ls
+233998 glh.fcb
+184686 jzn
+dir qcznqph
+dir qtbprrq
+299692 rbssdzm.ccn
+dir vtb
+$ cd qcznqph
