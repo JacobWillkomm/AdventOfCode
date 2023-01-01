@@ -6,17 +6,17 @@ class fileDirectory {
     this.directory = {}
     this.size = 0
   }
-  addFile(fileName, fileSize){
-    this.directory[fileName] = fileSize
-    this.directorySize += +fileSize
-    if(this.parentDirectory !== null){
-      this.parentDirectory.addSizeToParent(fileSize)
+  addFile(dir){
+    this.directory[dir.name] = dir
+    this.size += +dir.size
+    if(this.parent !== "root"){
+      this.parent.addSizeToParent(dir.size)
     }
   }
   addSizeToParent(fileSize){
-    if(this.parentDirectory !== null){
-      this.parentDirectory.directorySize += fileSize
-      this.parentDirectory.addSizeToParent(fileSize)
+    if(this.parent !== "root"){
+      this.parent.size += fileSize
+      this.parent.addSizeToParent(fileSize)
     }
   }
   addDirectory(dir){
@@ -26,9 +26,11 @@ class fileDirectory {
 
 const fs = require('fs');
 
-let fileDir = new fileDirectory(null)
+let fileDir = new fileDirectory('/')
+fileDir.isDirectory = true
+fileDir.parent = "root"
 
-console.log(fileDir.parentDirectory, fileDir.directorySize, fileDir.directory)
+console.log(fileDir.name, fileDir.parent, fileDir.size, fileDir.directory)
 
 let data = fs.readFile("inputs/day07.txt", 'utf8', function (err,data) {
     if (err) {
@@ -38,34 +40,27 @@ let data = fs.readFile("inputs/day07.txt", 'utf8', function (err,data) {
     let result = data.split('\n')
     let currentDirectory = fileDir
     result.forEach(ele => {
+      let command = ele.split(' ')
       
-      if(!isNaN(ele.split(' ')[0])){
-        let newDir = new fileDirectory(ele.split(' ')[0])
-        newDir.size = ele.split(' ')[0]
-        fileDir.addFile(newDir)
-      }else if(ele.split(' ')[0] === "dir"){
-        let newDir = new fileDirectory(ele.split(' ')[1])
+      if(!isNaN(command[0])){
+        let newDir = new fileDirectory(command[1])
+        newDir.size = +command[0]
+        currentDirectory.addFile(newDir)
+      }else if(command[0] === "dir"){
+        let newDir = new fileDirectory(command[1])
         newDir.parent = currentDirectory
         newDir.isDirectory = true
         currentDirectory.addDirectory(newDir)
+      }else if(command[1] === "cd"){
+        if(command[2] === '/'){
+        }
+        else if(command[2] === '..'){
+          currentDirectory = currentDirectory.parent
+        }else{
+          currentDirectory = currentDirectory.directory[command[2]]
+        }
       }
-      
-      // else if(ele.split(' ')[0] === "dir"){
-      //   addDirectory(ele.split(' ')[1],currentDirectory)
-      // }else if(ele.split(' ')[1] === "cd"){
-      //   if(ele.split(' ')[2] === '..'){
-          
-      //   }
-      // }
     })
-    //console.log(fileDir.parentDirectory, fileDir.directorySize, fileDir.directory)
+    console.log(fileDir.name, fileDir.size, fileDir.directory)
   });
-
-function addFile(fileName, fileSize, directory){
-  directory[fileName] = fileSize
-}
-
-function addDirectory(directoryName, directory){
-  directory[directoryName] = {}
-}
 
