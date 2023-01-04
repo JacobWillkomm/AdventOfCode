@@ -68,30 +68,37 @@ let data = fs.readFile("inputs/day07.txt", 'utf8', function (err,data) {
       }
     })
 
-    //TODO, filter directory and get size
-    //use Depth First Search
+    //Solutions:
     let stack = []
     stack.push(fileDir)
-    let totalSize = 0
-    console.log(fileDir)
 
+    let part1Size = 0
+    let deleteOptions = []
+    let totalSize = fileDir.size
+    let maxSize = 70000000
+    let neededUpdateSpace = 30000000
+    let unusedSpace = maxSize - totalSize
+    let neededSpace = neededUpdateSpace - unusedSpace
+
+    //Breadth First Search
     while(stack.length > 0){
       let currentNode = stack.pop()
       if(currentNode.isDirectory){
+        //add children to queue
         for(const dirName of Object.values(currentNode.directory)){
           stack.push(dirName)
         }
-      }
-      
-      if(currentNode.isDirectory && currentNode.size <= 100000){
-        console.log(currentNode.name, currentNode.size)
-        totalSize += currentNode.size
+        //part1 logic
+        if(currentNode.size <= 100000){
+          part1Size += currentNode.size
+        }
+        //part2 logic
+        if(currentNode.size >= neededSpace){
+          deleteOptions.push(currentNode)
+        }
       }
     }
-    console.log(totalSize)
-
-
-
-
+    deleteOptions.sort((a, b) => a.size - b.size)
+    console.log(part1Size, deleteOptions[0].size)
 });
 
