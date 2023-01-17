@@ -9,6 +9,8 @@ class Monkey{
         this.falseMonkey = falseTarget //Target monkey when condition is false
         this.totalItemsInspected = 0
     }
+
+    //inspectItems takes the common factor for all monkey conditionValues, as we can take the mod of the commonFactor to keep the worry value to a managble level without modifying its factors
     inspectItems(commonFactor){
         //update worryLevel
         this.items.forEach(item => {
@@ -24,12 +26,14 @@ class Monkey{
             }
             this.totalItemsInspected++
         })
-        //all items have been thrown
+        //all items have been thrown, reset this.items
         this.items = []
     }
+    //add a item, called in another monkey's InspectItems
     catchItem(item){
         this.items.push(item)
     }
+    //set targets after all monkeys have been instansiated
     setTargets(trueMonkey, falseMonkey){
         this.trueMonkey = trueMonkey
         this.falseMonkey = falseMonkey
@@ -53,6 +57,7 @@ let data = fs.readFile("inputs/day11.txt", 'utf8', function (err,data) {
             let input = ele.split('\n')
             let startingItems = input[1].split(':')[1].trim().split(", ").map(ele => BigInt(ele))
             let operationInput = input[2].split('=')[1].trim().split(' ')
+            //Using BigInts is not required, as we calculate the commonFactor later.
             if(!isNaN(operationInput[2])){
                 operationInput[2] = "BigInt("+ operationInput[2]+")"
             }
@@ -73,7 +78,6 @@ let data = fs.readFile("inputs/day11.txt", 'utf8', function (err,data) {
         monkey.setTargets(arr[targetMonkeys[i][0]], arr[targetMonkeys[i][1]])
         commonFactor *= monkey.conditionValue
     })
-    console.log(commonFactor)
 
     for(let round = 0; round < 10000; round++){
         console.log("round: ",round)
