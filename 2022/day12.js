@@ -25,8 +25,36 @@ class Graph{
     constructor(root){
         this.root = root //Node
     }
-    solve(){
-        //TODO Breadth-First Search
+    solve(target){
+        let found = false
+        let queue = this.root.neighboors
+        let nextLevel = []
+        this.root.visited = true 
+        queue.push(null)
+        let depth = 1
+        while(!found && queue[0] !== null){
+            console.log(queue.length)
+            for(let i = 0; i < queue.length; i++){
+                let node = queue[i]
+                console.log(node)
+                if(node === null){
+                    depth++
+                }else if(node.height === target){
+                    found = true
+                    return depth
+                }else{
+                    node.neighboors.forEach(neighboor => {
+                        if(!neighboor.visited){
+                            nextLevel.push(neighboor)
+                            neighboor.visited = true
+                        }
+                    })
+                }
+            }
+            nextLevel.push(null)
+            queue = nextLevel
+            nextLevel = []
+        }
     }
 }
 
@@ -52,7 +80,7 @@ let data = fs.readFile("inputs/day12.txt", 'utf8', function (err,data) {
                     grid[y][x].addNeighboor(grid[y][x-1])
                 }
             }
-            if(x < grid[y].length - 2){ //right Neighboor
+            if(x < grid[y].length - 1){ //right Neighboor
                 if(grid[y][x].height >= grid[y][x+1].height - 1){
                     grid[y][x].addNeighboor(grid[y][x+1])
                 }
@@ -62,13 +90,13 @@ let data = fs.readFile("inputs/day12.txt", 'utf8', function (err,data) {
                     grid[y][x].addNeighboor(grid[y - 1][x])
                 }
             }
-            if(y < grid.length - 2){ //Bottom Neighboor
+            if(y < grid.length - 1){ //Bottom Neighboor
                 if(grid[y][x].height >= grid[y + 1][x].height - 1){
                     grid[y][x].addNeighboor(grid[y + 1][x])
                 }
             }
         }
     }
-    console.log(graph.root.letter, graph.root.neighboors)
+    console.log(graph.solve(26))
     
   });
