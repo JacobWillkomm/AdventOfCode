@@ -9,13 +9,14 @@ class Monkey{
         this.falseMonkey = falseTarget //Target monkey when condition is false
         this.totalItemsInspected = 0
     }
-    inspectItems(){
+    inspectItems(commonFactor){
         //update worryLevel
         this.items.forEach(item => {
             let old = item
     
             old = eval(this.operation) //worryLevel updated according to Monkey Operation
             //old = Math.floor(old / 3) //worryLevel reduced because Monkey didn't break item
+            old = old % commonFactor
             if(old % this.conditionValue === BigInt(0)){
                 this.trueMonkey.catchItem(old)
             }else{
@@ -67,18 +68,20 @@ let data = fs.readFile("inputs/day11.txt", 'utf8', function (err,data) {
         }
     });
 
+    let commonFactor = 1n
     monkeyArray.forEach((monkey, i, arr) => {
         monkey.setTargets(arr[targetMonkeys[i][0]], arr[targetMonkeys[i][1]])
-        monkey.printMonkey()
+        commonFactor *= monkey.conditionValue
     })
+    console.log(commonFactor)
 
     for(let round = 0; round < 10000; round++){
         console.log("round: ",round)
         monkeyArray.forEach(monkey => {
-            monkey.inspectItems()
+            monkey.inspectItems(commonFactor)
         })
     }
-    let totalItemsInspectedArr = monkeyArray.map(monkey => monkey.totalItemsInspected)
+    let totalItemsInspectedArr = monkeyArray.map(monkey => monkey.totalItemsInspected).sort((a,b) => b-a)
     console.log(totalItemsInspectedArr, totalItemsInspectedArr[0] * totalItemsInspectedArr[1])
 
   });
