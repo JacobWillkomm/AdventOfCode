@@ -45,11 +45,20 @@ class WallGrid{
     let sandFalling = true
     let sandPosX = this.sandOrigin_x - this.minX
     let sandPosY = this.sandOrigin_y
-    console.log("sand falling Start")
     while(sandFalling){
+      //Check if sand will fall out of bounds
+      //  adjusted to account for the horizontal transformation:
+      //  (maxX - minX) right side
+      //  (minX - minX) which simplifies to 0
+      //  no vertical transformation required
+      //  maxY is the "lowest" wall with an empty buffer row added below
+      if(sandPosX >= (this.maxX - this.minX) || sandPosX < 0 || sandPosY >= this.maxY){
+        console.log("Sand OOB")
+        sandFalling = false
+      }
       //console.log("sand falling", "x:", sandPosX, "y:",sandPosY, this.grid[sandPosY+1][sandPosX-1], this.grid[sandPosY+1][sandPosX], this.grid[sandPosY+1][sandPosX+1])
       //if space below is empty, move down 1
-      if(this.grid[sandPosY + 1][sandPosX] === "."){
+      else if(this.grid[sandPosY + 1][sandPosX] === "."){
         sandPosY++
       }
       else if(this.grid[sandPosY + 1][sandPosX - 1] === "."){
@@ -85,6 +94,7 @@ for(let i = 0; i < 25; i++){
   temp.addSand()
 }
 temp.printGrid()
+console.log(temp.totalSandCount)
 
 const fs = require('fs');
 let data = fs.readFile("inputs/day14.txt", 'utf8', function (err,data) {
