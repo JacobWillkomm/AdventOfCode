@@ -9,19 +9,26 @@ class WallGrid{
     this.maxY = 0
   }
 
-  //Resize takes the min value for x and y and the max value for x
+  //Resize must be called before starting to add walls and sand
+  //Resize gets the min value for x and y and the max value for x
   //and creates an array of arrays of strings and places the sandOrgin
   //one additional row, and one additional column is added to each side
+  //Part2: A floor is added below the buffer row
+  //        the floor extends into inf on each side, so the number of vertical rows was added to each side of individual row
+  //        so that there should be enough room for the origin to be covered.
   resize(){
-    this.minX = this.minX - 1
-    this.maxX = this.maxX + 1
+    this.minX = this.minX - this.maxY
+    this.maxX = this.maxX + this.maxY
     this.maxY = this.maxY + 1
     for(let row = 0; row <= this.maxY; row++){
       this.grid.push(Array(this.maxX - this.minX + 1).fill('.'))
     }
+    this.grid.push(Array(this.maxX - this.minX + 1).fill('#'))
     this.grid[this.sandOrigin_y][this.sandOrigin_x - this.minX] = '+'
   }
-
+  
+  //checkSize takes a point and sets the min and max X and Y coords
+  //Must call resize after the last time checkSize is called
   checkSize(point){
     if(+point[0] > this.maxX){
       this.maxX = +point[0]
@@ -66,14 +73,11 @@ class WallGrid{
       //  adjusted to account for the horizontal transformation:
       //  (maxX - minX) right side
       //  (minX - minX) which simplifies to 0
-      //  no vertical transformation required
-      //  maxY is the "lowest" wall with an empty buffer row added below
-      if(sandPosX >= (this.maxX - this.minX) || sandPosX < 0 || sandPosY >= this.maxY){
+      if(sandPosX >= (this.maxX - this.minX) || sandPosX < 0){//Part1 check || sandPosY >= this.maxY){
         console.log("Sand OOB")
         sandFalling = false
         return false
       }
-      //console.log("sand falling", "x:", sandPosX, "y:",sandPosY, this.grid[sandPosY+1][sandPosX-1], this.grid[sandPosY+1][sandPosX], this.grid[sandPosY+1][sandPosX+1])
       //if space below is empty, move down 1
       else if(this.grid[sandPosY + 1][sandPosX] === "."){
         sandPosY++
@@ -88,6 +92,9 @@ class WallGrid{
         this.grid[sandPosY][sandPosX] = 'o'
         this.totalSandCount++
         sandFalling = false
+        if(sandPosX === this.sandOrigin_x - this.minX && sandPosY === this.sandOrigin_y){//part2 check
+          return false
+        }
       }
     }
     return true
@@ -99,22 +106,6 @@ class WallGrid{
   }
 
 }
-
-let temp = new WallGrid();
-temp.checkSize([494, 1])
-temp.checkSize([503,9])
-temp.resize()
-temp.addWall(498, 4, 498, 6)
-temp.addWall(498, 6, 496, 6)
-temp.addWall(503, 4, 502, 4)
-temp.addWall(502, 4, 502, 9)
-temp.addWall(502, 9, 494, 9)
-temp.printGrid()
-
-while(temp.addSand())
-
-temp.printGrid()
-console.log(temp.totalSandCount)
 
 let part1Grid = new WallGrid();
 
@@ -133,21 +124,14 @@ let data = fs.readFile("inputs/day14.txt", 'utf8', function (err,data) {
             part1Grid.checkSize(ini)
             part1Grid.checkSize(fin)
             coordArr.push([ini,fin])
-            console.log(i, lineArr[i], ini, fin)
         }
-        line.split(' -> ').forEach(coord => {
-            //console.log(coord)
-        })
     })
     part1Grid.resize()
-    console.log(part1Grid.minX, part1Grid.maxX, part1Grid.maxY)
     coordArr.forEach(ele => {
       part1Grid.addWall(ele[0][0], ele[0][1], ele[1][0], ele[1][1])
     })
-    part1Grid.printGrid()
     while(part1Grid.addSand()){}
-    part1Grid.printGrid()
-    console.log(part1Grid.totalSandCount)
+    console.log("Part2 Total Sand:", part1Grid.totalSandCount)
 
 
   });
