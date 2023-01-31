@@ -1,11 +1,5 @@
 const fs = require('fs');
 
-class BeaconGrid{
-    constructor(){
-    }
-
-
-}
 
 class SensorArray{
     constructor(sensors){
