@@ -17,10 +17,19 @@ class SensorArray{
     }
     getCondensedRange(row){
         let result = []
+        let condensedResult = []
         for(let i = 0; i < this.sensors.length; i++){
-            let tempRange = this.sensors.getCoveredRange(row)
+            let tempRange = this.sensors[i].getCoveredRange(row)
             if(tempRange !== false){
                 result.push(tempRange)
+            }
+
+        }
+        console.log(result)
+        result.sort((a,b) => a[0]-b[0])
+        for(let i = 1; i < result.length; i++){
+            if(result[i][0] < result[i-1][1]){
+                
             }
 
         }
@@ -112,7 +121,8 @@ let data = fs.readFile("inputs/day15.txt", 'utf8', function (err,data) {
     console.log(dim)
 
     let part1Count = 0
-    console.log(rangeArray)
+    console.log(sensors)
+    sensors.getCondensedRange(1000000)
     for(let i = dim.xMin - (maxRadius * 2); i <= dim.xMax + (maxRadius * 2); i++){
         let covered = false
         for(let j = 0; j < sensorArr.length; j++){
